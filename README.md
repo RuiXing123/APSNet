@@ -92,3 +92,52 @@ conda activate seed
 ```bash
 pip install -r requirements.txt
 ```
+
+### Dataset
+
+**Apply for APS dataset:** Download and fill in the application form for APS dataset under the data directory and send it to the corresponding author. We will reply after review.
+
+```bash
+data/
+├── form.docx
+└── APS_dataset/
+    ├── class_list.txt
+    ├── train/
+    │   ├── classname1/
+    │   │   ├── img_001.jpg
+    │   │   ├── img_002.jpg
+    │   │   └── ...
+    │   ├── classname2/
+    │   │   ├── img_001.jpg
+    │   │   └── ...
+    │   └── ...
+    └── test/
+        ├── classname1/
+        │   ├── img_001.jpg
+        │   └── ...
+        ├── classname2/
+        │   └── ...
+        └── ...
+```
+
+## 🚀Train & Evaluate
+
+### Train
+
+To start training, simply run:
+```bash
+python train.py
+```
+
+### Evaluate
+
+To start testing, simply run:
+```bash
+python predict.py
+```
+
+## ⭐ BibTeX
+
+```bash
+123
+```
