@@ -2,7 +2,7 @@
 
 [Rui Xing](https://www.researchgate.net/profile/Rui-Xing-26?ev=hdr_xprf), [Runmin Cong*](https://scholar.google.cz/citations?user=-VrKJ0EAAAAJ&hl), [Yingying Wu](https://www.researchgate.net/profile/Yingying_Wu26), [Can Wang*](https://www.researchgate.net/profile/Can-Wang-21), [Zhongming Tang](http://en.history.sdu.edu.cn/info/1033/1242.htm), [Fen Wang](http://en.history.sdu.edu.cn/info/1032/1236.htm), [Hao Wu](https://www.history.sdu.edu.cn/info/1069/2114.htm), [Sam Kwong](https://scholar.google.com.hk/citations?hl=zh-CN&user=_PVI6EAAAAAJ)
 
-[Paper]() | [BibTex]() | [Dataset]()
+[Paper]() | [BibTex](#-bibtex) | [Dataset](#dataset)
 
 ## 🚩 Highlights:
 
