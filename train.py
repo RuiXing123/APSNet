@@ -25,7 +25,7 @@ DEVICE = torch.device(f"cuda:{DEVICE_ID}" if torch.cuda.is_available() else "cpu
 # ------------------
 # Data
 # ------------------
-DATA_PATH = '/data/xr/datasets/APS Dataset Challenge/'
+DATA_PATH = 'data/APS_dataset/'
 BATCH_SIZE = 16
 NUM_WORKERS = 8
 
