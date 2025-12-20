@@ -14,8 +14,14 @@
 
 **Task-oriented network design for archaeobotany**: We propose APSNet, a dedicated classification framework for ancient plant seeds that addresses the limitations of existing fine-grained and CNN-based methods under archaeological conditions.
 
+![](img/APSNet.png) 
+
 **Explicit size-aware feature learning**: A novel Size Perception and Embedding (SPE) module is introduced to explicitly model seed size information, guiding the network to discover key morphological evidence beyond conventional fine-grained texture cues.
 
+![](img/SPE.png) 
+
 **Asynchronous decoupled decoding mechanism**: We design an Asynchronous Decoupled Decoding (ADD) architecture that jointly decodes channel-wise and spatial information, enhancing discrimination under high inter-class similarity and severe intra-class variation.
+
+![](img/ADD.png) 
 
 **State-of-the-art performance and benchmark establishment**: Extensive experiments against 28 representative classification methods demonstrate that APSNet achieves 90.5% accuracy, establishing the first benchmark for ancient plant seed classification in archaeological research.
