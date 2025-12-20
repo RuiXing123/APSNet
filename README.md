@@ -58,3 +58,37 @@
 | GhostNetv2 | 2022 | 84.9% | 66.3% | 70.6% | 65.4% |
 | **APSNet** | **Our** | **90.2%** | **77.7%** | **77.7%** | **77.5%** |
 
+## 🛠️Environment Setup
+
+### Requirements
+
+- grad_cam==1.5.5
+
+- numpy==2.3.5
+
+- Pillow==12.0.0
+
+- torch==2.6.0+cu118
+
+- torchinfo==1.8.0
+
+- torchvision==0.21.0+cu118
+
+- tqdm==4.67.1
+
+- Python==3.12.11
+
+### Installation
+
+**Step 1:** Create a conda environment and activate it.
+
+```bash
+conda create -n seed python=3.12.11
+conda activate seed
+```
+
+**Step 3:** Install other dependencies from requirements.txt.
+
+```bash
+pip install -r requirements.txt
+```
