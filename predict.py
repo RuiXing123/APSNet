@@ -20,7 +20,7 @@ from pytorch_grad_cam.utils.image import show_cam_on_image
 # Paths
 # ------------------
 CKPT_PATH = 'output/Challenge'
-DATA_ROOT = '/data/xr/datasets/APS Dataset Challenge'
+DATA_ROOT = 'data/APS_dataset'
 VAL_DIR = os.path.join(DATA_ROOT, 'val')
 
 # ------------------
@@ -260,3 +260,4 @@ if __name__ == '__main__':
     print(f"Precision: {precision:.4f}")
     print(f"Recall   : {recall:.4f}")
     print(f"F1-score : {f1_score:.4f}")
+
