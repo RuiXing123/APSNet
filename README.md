@@ -2,7 +2,7 @@
 
 [Rui Xing](https://www.researchgate.net/profile/Rui-Xing-26?ev=hdr_xprf), [Runmin Cong*](https://scholar.google.cz/citations?user=-VrKJ0EAAAAJ&hl), [Yingying Wu](https://www.researchgate.net/profile/Yingying_Wu26), [Can Wang*](https://www.researchgate.net/profile/Can-Wang-21), [Zhongming Tang](http://en.history.sdu.edu.cn/info/1033/1242.htm), [Fen Wang](http://en.history.sdu.edu.cn/info/1032/1236.htm), [Hao Wu](https://www.history.sdu.edu.cn/info/1069/2114.htm), [Sam Kwong](https://scholar.google.com.hk/citations?hl=zh-CN&user=_PVI6EAAAAAJ)
 
-[Paper]() | [BibTex](#-bibtex) | [Dataset](#dataset)
+[Paper](https://doi.org/10.48550/arXiv.2512.18247) | [BibTex](#-bibtex) | [Dataset](#dataset)
 
 ## 🚩 Highlights:
 
@@ -141,5 +141,19 @@ python predict.py
 ## ⭐ BibTeX
 
 ```bash
-123
+@ARTICLE{2025arXiv251218247X,
+       author = {{Xing}, Rui and {Cong}, Runmin and {Wu}, Yingying and {Wang}, Can and {Tang}, Zhongming and {Wang}, Fen and {Wu}, Hao and {Kwong}, Sam},
+        title = "{Towards Ancient Plant Seed Classification: A Benchmark Dataset and Baseline Model}",
+      journal = {arXiv e-prints},
+     keywords = {Computer Vision and Pattern Recognition, Artificial Intelligence},
+         year = 2025,
+        month = dec,
+          eid = {arXiv:2512.18247},
+        pages = {arXiv:2512.18247},
+archivePrefix = {arXiv},
+       eprint = {2512.18247},
+ primaryClass = {cs.CV},
+       adsurl = {https://ui.adsabs.harvard.edu/abs/2025arXiv251218247X},
+      adsnote = {Provided by the SAO/NASA Astrophysics Data System}
+}
 ```
