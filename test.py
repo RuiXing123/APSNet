@@ -23,13 +23,15 @@ def test(
     total = 0
 
     transform_test = transforms.Compose([
-        transforms.Resize((image_size, image_size)),
+        transforms.Resize((image_size + 102, image_size + 102)),
+        transforms.RandomCrop(image_size, padding=8),
+        transforms.RandomHorizontalFlip(),
         transforms.ToTensor(),
         transforms.Normalize(mean, std),
     ])
 
     testset = torchvision.datasets.ImageFolder(
-        root=f"{data_path}/test",
+        root=f"{data_path}/testraw",
         transform=transform_test
     )
 

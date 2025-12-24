@@ -19,20 +19,20 @@ from Jigsaw import jigsaw_generator
 # ------------------
 # Hardware
 # ------------------
-DEVICE_ID = 1
+DEVICE_ID = 0
 DEVICE = torch.device(f"cuda:{DEVICE_ID}" if torch.cuda.is_available() else "cpu")
 
 # ------------------
 # Data
 # ------------------
-DATA_PATH = 'data/APS_dataset/'
+DATA_PATH = '/data/xr/datasets/seed_data_crop_noRs_padding_select_paper_Analysis73/'
 BATCH_SIZE = 16
 NUM_WORKERS = 8
 
 # ------------------
 # Image
 # ------------------
-IMAGE_SIZE = 512
+IMAGE_SIZE = 448
 
 # ------------------
 # Normalization
@@ -56,7 +56,7 @@ REQUIRE_GRAD = True
 # ------------------
 # Experiment
 # ------------------
-STORE_NAME = 'output/Challenge'
+STORE_NAME = 'output/APS'
 RESUME = False
 MODEL_PATH = ''
 START_EPOCH = 0
@@ -116,7 +116,7 @@ def train(
     print('Preparing training data...')
 
     transform_train = transforms.Compose([
-        transforms.Resize((IMAGE_SIZE + 100, IMAGE_SIZE + 100)),
+        transforms.Resize((IMAGE_SIZE + 102, IMAGE_SIZE + 102)),
         transforms.RandomCrop(IMAGE_SIZE, padding=8),
         transforms.RandomHorizontalFlip(),
         transforms.ToTensor(),
