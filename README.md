@@ -142,18 +142,10 @@ python predict.py
 
 ```bash
 @ARTICLE{2025arXiv251218247X,
-       author = {{Xing}, Rui and {Cong}, Runmin and {Wu}, Yingying and {Wang}, Can and {Tang}, Zhongming and {Wang}, Fen and {Wu}, Hao and {Kwong}, Sam},
-        title = "{Towards Ancient Plant Seed Classification: A Benchmark Dataset and Baseline Model}",
-      journal = {arXiv e-prints},
-     keywords = {Computer Vision and Pattern Recognition, Artificial Intelligence},
-         year = 2025,
-        month = dec,
-          eid = {arXiv:2512.18247},
-        pages = {arXiv:2512.18247},
-archivePrefix = {arXiv},
-       eprint = {2512.18247},
- primaryClass = {cs.CV},
-       adsurl = {https://ui.adsabs.harvard.edu/abs/2025arXiv251218247X},
-      adsnote = {Provided by the SAO/NASA Astrophysics Data System}
+  author  = {{Xing}, Rui and {Cong}, Runmin and {Wu}, Yingying and {Wang}, Can and {Tang}, Zhongming and {Wang}, Fen and {Wu}, Hao and {Kwong}, Sam},
+  title   = {{Towards Ancient Plant Seed Classification: A Benchmark Dataset and Baseline Model}},
+  journal = {arXiv e-prints},
+  year    = {2025},
+  eprint  = {2512.18247},
 }
 ```
