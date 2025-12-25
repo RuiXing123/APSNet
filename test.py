@@ -23,7 +23,7 @@ def test(
     total = 0
 
     transform_test = transforms.Compose([
-        # transforms.Resize((image_size + 102, image_size + 102)),
+        transforms.Resize((image_size + 102, image_size + 102)),
         transforms.RandomCrop(image_size, padding=8),
         transforms.RandomHorizontalFlip(),
         transforms.ToTensor(),
