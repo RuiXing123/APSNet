@@ -24,7 +24,7 @@ def test(
 
     transform_test = transforms.Compose([
         transforms.Resize((image_size + 102, image_size + 102)),
-        transforms.RandomCrop(image_size, padding=8),
+        transforms.RandomCrop(image_size),
         transforms.RandomHorizontalFlip(),
         transforms.ToTensor(),
         transforms.Normalize(mean, std),
@@ -49,7 +49,7 @@ def test(
             inputs = inputs.to(device)
             targets = targets.to(device)
 
-            output_1, output_2, output_3, output_concat, _ = net(inputs)
+            output_1, output_2, output_3, _, output_concat = net(inputs)
             outputs_com = output_1 + output_2 + output_3 + output_concat
 
             loss = criterion(output_concat, targets)

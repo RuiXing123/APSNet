@@ -260,9 +260,6 @@ class ResNet_SACON_ConRes(nn.Module):
         self.layer4 = self._make_layer(block, 512, layers[3], stride=2,
                                        dilate=replace_stride_with_dilation[2])
 
-        self.SizeCls = nn.Conv2d(512 * block.expansion, num_classes,1,1)
-        self.pool = nn.AdaptiveAvgPool2d(1)
-
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
                 nn.init.kaiming_normal_(m.weight, mode='fan_out', nonlinearity='relu')
@@ -333,10 +330,7 @@ class ResNet_SACON_ConRes(nn.Module):
         x5 = self.eca4(x5)
         x5 = self.layer4(x5)
 
-        x6 = self.SizeCls(x5)
-        x6 = self.pool(x6).squeeze(-1).squeeze(-1)
-
-        return x1, x2, x3, x4, x5, x6
+        return x1, x2, x3, x4, x5
 
 
 def _resnet(arch, inplanes, planes, pretrained, progress, **kwargs):

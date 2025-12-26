@@ -26,14 +26,13 @@ DEVICE = torch.device(f"cuda:{DEVICE_ID}" if torch.cuda.is_available() else "cpu
 # Data
 # ------------------
 DATA_PATH = '/data/xr/datasets/seed_data_crop_noRs_padding_select_paper_Analysis73/'
-BATCH_SIZE = 16
+BATCH_SIZE = 32
 NUM_WORKERS = 8
 
 # ------------------
 # Image
 # ------------------
 IMAGE_SIZE = 448
-
 # ------------------
 # Normalization
 # ------------------
@@ -50,6 +49,7 @@ PATIENCE = 30
 # Model
 # ------------------
 MODEL_NAME = 'APSNet'
+CLASS_NUM = 17
 PRETRAIN = False
 REQUIRE_GRAD = True
 
@@ -71,7 +71,8 @@ LR_GROUPS = [
     0.001,   # conv_block2
     0.001,   # classifier2
     0.001,   # conv_block3
-    0.001,   # classifier3
+    0.001,   # classifier_decoupled_channel
+    0.001,   # classifier_decoupled_Spatial
     0.0001   # features
 ]
 WEIGHT_DECAY = 5e-4
@@ -96,6 +97,7 @@ def train(
     num_workers,
     patience,
     model_name,
+    class_num,
     pretrain,
     require_grad,
     weight_decay,
@@ -143,6 +145,7 @@ def train(
     else:
         net = load_model(
             model_name=model_name,
+            class_num=class_num,
             pretrain=pretrain,
             require_grad=require_grad
         )
@@ -157,14 +160,15 @@ def train(
 
     optimizer = optim.AdamW(
         [
-            {'params': net.classifier_concat.parameters(),         'lr': lr_groups[0]},
-            {'params': net.conv_block1.parameters(),               'lr': lr_groups[1]},
-            {'params': net.classifier1.parameters(),               'lr': lr_groups[2]},
-            {'params': net.conv_block2.parameters(),               'lr': lr_groups[3]},
-            {'params': net.classifier2.parameters(),               'lr': lr_groups[4]},
-            {'params': net.conv_block3.parameters(),               'lr': lr_groups[5]},
-            {'params': net.classifier_decoupled.parameters(),      'lr': lr_groups[6]},
-            {'params': net.features.parameters(),                  'lr': lr_groups[7]},
+            {'params': net.classifier_concat.parameters(),                 'lr': lr_groups[0]},
+            {'params': net.conv_block1.parameters(),                       'lr': lr_groups[1]},
+            {'params': net.classifier1.parameters(),                       'lr': lr_groups[2]},
+            {'params': net.conv_block2.parameters(),                       'lr': lr_groups[3]},
+            {'params': net.classifier2.parameters(),                       'lr': lr_groups[4]},
+            {'params': net.conv_block3.parameters(),                       'lr': lr_groups[5]},
+            {'params': net.classifier_decoupled_channel.parameters(),      'lr': lr_groups[6]},
+            {'params': net.classifier_decoupled_Spatial.parameters(),      'lr': lr_groups[7]},
+            {'params': net.features.parameters(),                          'lr': lr_groups[8]},
         ],
         betas=(0.9, 0.999),
         eps=1e-8,
@@ -205,8 +209,7 @@ def train(
             inputs, targets = Variable(inputs), Variable(targets)
 
             for i in range(len(optimizer.param_groups)):
-                optimizer.param_groups[i]['lr'] = \
-                    cosine_anneal_schedule(epoch, nb_epoch, lr_groups[i])
+                optimizer.param_groups[i]['lr'] = cosine_anneal_schedule(epoch, nb_epoch, lr_groups[i])
 
             optimizer.zero_grad()
             inputs1 = jigsaw_generator(inputs, 8)
@@ -224,7 +227,7 @@ def train(
 
             optimizer.zero_grad()
             inputs3 = jigsaw_generator(inputs, 2)
-            _, _, output_3, _, ConRes = netp(inputs3)
+            _, _, output_3, ConRes, _ = netp(inputs3)
             loss3 = CELoss(output_3, targets)
             ConResloss = con_loss(ConRes, targets)
             decoupled_loss = loss3 + ConResloss
@@ -232,7 +235,7 @@ def train(
             optimizer.step()
 
             optimizer.zero_grad()
-            _, _, _, output_concat, _ = netp(inputs)
+            _, _, _, _, output_concat = netp(inputs)
             concat_loss = CELoss(output_concat, targets) * 2
             concat_loss.backward()
             optimizer.step()
@@ -328,6 +331,7 @@ if __name__ == '__main__':
         num_workers=NUM_WORKERS,
         patience=PATIENCE,
         model_name=MODEL_NAME,
+        class_num=CLASS_NUM,
         pretrain=PRETRAIN,
         require_grad=REQUIRE_GRAD,
         weight_decay=WEIGHT_DECAY,

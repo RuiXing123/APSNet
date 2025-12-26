@@ -3,13 +3,13 @@ import torch
 from Resnet import  resnet50_SACON_ConRes
 
 
-def load_model(model_name, pretrain=True, require_grad=True):
+def load_model(model_name, class_num, pretrain=True, require_grad=True):
     print('==> Building model..')
     if model_name == 'APSNet':
         net = resnet50_SACON_ConRes(pretrained=pretrain)
         for param in net.parameters():
             param.requires_grad = require_grad
-        net = APSNet(net, 512, 17)
+        net = APSNet(net, 512, class_num)
     return net
 
 
@@ -79,19 +79,23 @@ class APSNet(nn.Module):
             CBR(self.num_ftrs, feature_size, kernel_size=1, stride=1, padding=0, relu=True),
             CBR(feature_size, self.num_ftrs // 2, kernel_size=3, stride=1, padding=1, relu=True)
         )
-        self.classifier_decoupled = nn.Sequential(
+        self.classifier_decoupled_channel = nn.Sequential(
             nn.BatchNorm1d(self.num_ftrs // 2),
             nn.Linear(self.num_ftrs // 2, feature_size),
             nn.BatchNorm1d(feature_size),
             nn.ELU(inplace=True),
             nn.Linear(feature_size, classes_num),
         )
-
+        self.classifier_decoupled_Spatial = nn.Sequential(
+            nn.Conv2d(self.num_ftrs // 2, classes_num,1,1),
+            nn.AdaptiveAvgPool2d(1)
+        )
     def forward(self, x):
-        xf1, xf2, xf3, xf4, xf5, xCon = self.features(x)
+        xf1, xf2, xf3, xf4, xf5 = self.features(x)
         xl1 = self.conv_block1(xf3)
         xl2 = self.conv_block2(xf4)
         xl3 = self.conv_block3(xf5)
+        xl4 = xl3
 
         xl1 = self.max1(xl1)
         xl1 = xl1.view(xl1.size(0), -1)
@@ -103,8 +107,10 @@ class APSNet(nn.Module):
 
         xl3 = self.max3(xl3)
         xl3 = xl3.view(xl3.size(0), -1)
-        xc3 = self.classifier_decoupled(xl3)
+        xc3 = self.classifier_decoupled_channel(xl3)
+
+        xc4 = self.classifier_decoupled_Spatial(xl4).squeeze(-1).squeeze(-1)
 
         x_concat = torch.cat((xl1, xl2, xl3), -1)
         x_concat = self.classifier_concat(x_concat)
-        return xc1, xc2, xc3, x_concat, xCon
+        return xc1, xc2, xc3, xc4, x_concat
