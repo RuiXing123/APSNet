@@ -25,8 +25,8 @@ DEVICE = torch.device(f"cuda:{DEVICE_ID}" if torch.cuda.is_available() else "cpu
 # ------------------
 # Data
 # ------------------
-DATA_PATH = '/data/xr/datasets/seed_data_crop_noRs_padding_select_paper_Analysis73/'
-BATCH_SIZE = 32
+DATA_PATH = ''
+BATCH_SIZE = 16
 NUM_WORKERS = 8
 
 # ------------------
@@ -161,14 +161,14 @@ def train(
     optimizer = optim.AdamW(
         [
             {'params': net.Head_Con.parameters(),                 'lr': lr_groups[0]},
-            {'params': net.conv_block1.parameters(),                       'lr': lr_groups[1]},
-            {'params': net.Head_1.parameters(),                       'lr': lr_groups[2]},
-            {'params': net.conv_block2.parameters(),                       'lr': lr_groups[3]},
-            {'params': net.Head_2.parameters(),                       'lr': lr_groups[4]},
-            {'params': net.conv_block3.parameters(),                       'lr': lr_groups[5]},
-            {'params': net.Head_Dc_Channel.parameters(),      'lr': lr_groups[6]},
-            {'params': net.Head_Dc_Spatial.parameters(),      'lr': lr_groups[7]},
-            {'params': net.features.parameters(),                          'lr': lr_groups[8]},
+            {'params': net.conv_block1.parameters(),              'lr': lr_groups[1]},
+            {'params': net.Head_1.parameters(),                   'lr': lr_groups[2]},
+            {'params': net.conv_block2.parameters(),              'lr': lr_groups[3]},
+            {'params': net.Head_2.parameters(),                   'lr': lr_groups[4]},
+            {'params': net.conv_block3.parameters(),              'lr': lr_groups[5]},
+            {'params': net.Head_Dc_Channel.parameters(),          'lr': lr_groups[6]},
+            {'params': net.Head_Dc_Spatial.parameters(),          'lr': lr_groups[7]},
+            {'params': net.features.parameters(),                 'lr': lr_groups[8]},
         ],
         betas=(0.9, 0.999),
         eps=1e-8,
@@ -236,8 +236,8 @@ def train(
 
             optimizer.zero_grad()
             _, _, _, _, output_concat = netp(inputs)
-            concat_loss = CELoss(output_concat, targets) * 2
-            concat_loss.backward()
+            lossConcat = CELoss(output_concat, targets) * 2
+            lossConcat.backward()
             optimizer.step()
 
             _, predicted = torch.max(output_concat.data, 1)
@@ -248,13 +248,13 @@ def train(
                 loss1.item() +
                 loss2.item() +
                 lossDecoupled.item() +
-                concat_loss.item()
+                lossConcat.item()
             )
 
             train_loss1 += loss1.item()
             train_loss2 += loss2.item()
             train_lossDecoupld += lossDecoupled.item()
-            train_lossConcat += concat_loss.item()
+            train_lossConcat += lossConcat.item()
 
             acc = 100. * float(correct) / total
 

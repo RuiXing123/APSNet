@@ -6,7 +6,7 @@ import torch
 import torchvision
 import torchvision.transforms as transforms
 import numpy as np
-from PIL import Image
+from PIL import Image, ImageOps
 
 from pytorch_grad_cam import GradCAM
 from pytorch_grad_cam.utils.image import show_cam_on_image
@@ -19,20 +19,21 @@ from pytorch_grad_cam.utils.image import show_cam_on_image
 # ------------------
 # Paths
 # ------------------
-CKPT_PATH = 'output/Challenge'
-DATA_ROOT = 'data/APS_dataset'
+CKPT_PATH = 'output/APS'
+DATA_ROOT = ''
 VAL_DIR = os.path.join(DATA_ROOT, 'test')
 
 # ------------------
 # Hardware
 # ------------------
-DEVICE_ID = 1
+DEVICE_ID = 7
 DEVICE = torch.device(f'cuda:{DEVICE_ID}' if torch.cuda.is_available() else 'cpu')
 
 # ------------------
-# Image
+# Image and Magnification
 # ------------------
-IMAGE_SIZE = 512
+IMAGE_SIZE = 448
+MAGNIFICATION = 1.6
 
 # ------------------
 # Normalization
@@ -51,7 +52,8 @@ CAM_SAVE_DIR = CKPT_PATH + '/gradcam_results'
 # Transform
 # ==================================================
 TRANSFORM = transforms.Compose([
-    transforms.Resize((IMAGE_SIZE, IMAGE_SIZE)),
+    transforms.Resize((IMAGE_SIZE + 102, IMAGE_SIZE + 102)),
+    transforms.RandomCrop(IMAGE_SIZE),
     transforms.ToTensor(),
     transforms.Normalize(MEAN, STD),
 ])
@@ -81,28 +83,46 @@ net.to(DEVICE)
 # ==================================================
 # Utility functions
 # ==================================================
-@torch.no_grad()
-def predict_one(image_path):
-    img = Image.open(image_path).convert('RGB')
+def adjust_magnification(img, M_current, M_train=1.6):
+    """
+    将任意倍率的显微镜图像，转换为 1.6x 视野等效图像。
+    策略：
+        - M_current < M_train → 裁剪中心区域
+        - M_current > M_train → 边缘复制填充
+    """
+    w, h = img.size
+    scale = M_current / M_train
 
-    width, height = img.size
-    side = min(width, height)
-    left = (width - side) // 2
-    top = (height - side) // 2
-    img = img.crop((left, top, left + side, top + side))
+    # 当前倍率低 → 视野大 → 裁剪
+    if scale < 1.0:
+        crop_ratio = scale
+        new_w = int(w * crop_ratio)
+        new_h = int(h * crop_ratio)
 
-    x = TRANSFORM(img).unsqueeze(0).to(DEVICE)
+        left = (w - new_w) // 2
+        top = (h - new_h) // 2
 
-    out1, out2, out3, out_cat, _ = net(x)
-    out_ensemble = out1 + out2 + out3 + out_cat
+        img = img.crop((left, top, left + new_w, top + new_h))
+        img = img.resize((w, h), Image.BICUBIC)
 
-    prob = torch.softmax(out_ensemble, dim=1)
-    top5_prob, top5_idx = torch.topk(prob, k=min(5, NUM_CLASSES), dim=1)
+    # 当前倍率高 → 视野小 → 填充
+    elif scale > 1.0:
+        shrink_ratio = 1 / scale
+        new_w = int(w * shrink_ratio)
+        new_h = int(h * shrink_ratio)
 
-    return [
-        (CLASS_NAMES[i], float(top5_prob[0, j]))
-        for j, i in enumerate(top5_idx[0])
-    ]
+        img_small = img.resize((new_w, new_h), Image.BICUBIC)
+
+        pad_w = (w - new_w) // 2
+        pad_h = (h - new_h) // 2
+
+        img = ImageOps.expand(
+            img_small,
+            border=(pad_w, pad_h, w - new_w - pad_w, h - new_h - pad_h),
+            fill=None  # Replicate padding
+        )
+
+    return img
 
 
 def get_last_conv_layer(model: torch.nn.Module):
@@ -126,9 +146,13 @@ class WrapperModel(torch.nn.Module):
 
 
 @torch.no_grad()
-def predict_one_gradcam(image_path):
+def predict_one_gradcam(image_path, magnification=1.6):
     img_pil = Image.open(image_path).convert('RGB')
-
+    img_pil = adjust_magnification(
+        img_pil,
+        M_current=magnification,
+        M_train=1.6
+    )
     width, height = img_pil.size
     side = min(width, height)
     left = (width - side) // 2
@@ -204,7 +228,7 @@ if __name__ == '__main__':
 
             image_path = os.path.join(class_dir, file_name)
 
-            preds = predict_one_gradcam(image_path)
+            preds = predict_one_gradcam(image_path, MAGNIFICATION)
             pred_class = preds[0][0]
             pred_idx = CLASS_NAMES.index(pred_class)
 
@@ -260,5 +284,3 @@ if __name__ == '__main__':
     print(f"Precision: {precision:.4f}")
     print(f"Recall   : {recall:.4f}")
     print(f"F1-score : {f1_score:.4f}")
-
-

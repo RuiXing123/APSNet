@@ -31,7 +31,7 @@ def test(
     ])
 
     testset = torchvision.datasets.ImageFolder(
-        root=f"{data_path}/testraw",
+        root=f"{data_path}/test",
         transform=transform_test
     )
 
