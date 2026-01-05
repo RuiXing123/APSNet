@@ -43,7 +43,7 @@ class APSNet(nn.Module):
         self.num_ftrs = 2048 * 1 * 1
         self.elu = nn.ELU(inplace=True)
 
-        self.classifier_concat = nn.Sequential(
+        self.Head_Con = nn.Sequential(
             nn.BatchNorm1d(1024 * 3),
             nn.Linear(1024 * 3, feature_size),
             nn.BatchNorm1d(feature_size),
@@ -55,7 +55,7 @@ class APSNet(nn.Module):
             CBR(self.num_ftrs // 4, feature_size, kernel_size=1, stride=1, padding=0, relu=True),
             CBR(feature_size, self.num_ftrs // 2, kernel_size=3, stride=1, padding=1, relu=True)
         )
-        self.classifier1 = nn.Sequential(
+        self.Head_1 = nn.Sequential(
             nn.BatchNorm1d(self.num_ftrs // 2),
             nn.Linear(self.num_ftrs // 2, feature_size),
             nn.BatchNorm1d(feature_size),
@@ -67,7 +67,7 @@ class APSNet(nn.Module):
             CBR(self.num_ftrs // 2, feature_size, kernel_size=1, stride=1, padding=0, relu=True),
             CBR(feature_size, self.num_ftrs // 2, kernel_size=3, stride=1, padding=1, relu=True)
         )
-        self.classifier2 = nn.Sequential(
+        self.Head_2 = nn.Sequential(
             nn.BatchNorm1d(self.num_ftrs // 2),
             nn.Linear(self.num_ftrs // 2, feature_size),
             nn.BatchNorm1d(feature_size),
@@ -79,14 +79,14 @@ class APSNet(nn.Module):
             CBR(self.num_ftrs, feature_size, kernel_size=1, stride=1, padding=0, relu=True),
             CBR(feature_size, self.num_ftrs // 2, kernel_size=3, stride=1, padding=1, relu=True)
         )
-        self.classifier_decoupled_channel = nn.Sequential(
+        self.Head_Dc_Channel = nn.Sequential(
             nn.BatchNorm1d(self.num_ftrs // 2),
             nn.Linear(self.num_ftrs // 2, feature_size),
             nn.BatchNorm1d(feature_size),
             nn.ELU(inplace=True),
             nn.Linear(feature_size, classes_num),
         )
-        self.classifier_decoupled_Spatial = nn.Sequential(
+        self.Head_Dc_Spatial = nn.Sequential(
             nn.Conv2d(self.num_ftrs // 2, classes_num,1,1),
             nn.AdaptiveAvgPool2d(1)
         )
@@ -99,18 +99,18 @@ class APSNet(nn.Module):
 
         xl1 = self.max1(xl1)
         xl1 = xl1.view(xl1.size(0), -1)
-        xc1 = self.classifier1(xl1)
+        xc1 = self.Head_1(xl1)
 
         xl2 = self.max2(xl2)
         xl2 = xl2.view(xl2.size(0), -1)
-        xc2 = self.classifier2(xl2)
+        xc2 = self.Head_2(xl2)
 
         xl3 = self.max3(xl3)
         xl3 = xl3.view(xl3.size(0), -1)
-        xc3 = self.classifier_decoupled_channel(xl3)
+        xc3 = self.Head_Dc_Channel(xl3)
 
-        xc4 = self.classifier_decoupled_Spatial(xl4).squeeze(-1).squeeze(-1)
+        xc4 = self.Head_Dc_Spatial(xl4).squeeze(-1).squeeze(-1)
 
         x_concat = torch.cat((xl1, xl2, xl3), -1)
-        x_concat = self.classifier_concat(x_concat)
+        x_concat = self.Head_Con(x_concat)
         return xc1, xc2, xc3, xc4, x_concat

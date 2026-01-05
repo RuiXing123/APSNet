@@ -160,14 +160,14 @@ def train(
 
     optimizer = optim.AdamW(
         [
-            {'params': net.classifier_concat.parameters(),                 'lr': lr_groups[0]},
+            {'params': net.Head_Con.parameters(),                 'lr': lr_groups[0]},
             {'params': net.conv_block1.parameters(),                       'lr': lr_groups[1]},
-            {'params': net.classifier1.parameters(),                       'lr': lr_groups[2]},
+            {'params': net.Head_1.parameters(),                       'lr': lr_groups[2]},
             {'params': net.conv_block2.parameters(),                       'lr': lr_groups[3]},
-            {'params': net.classifier2.parameters(),                       'lr': lr_groups[4]},
+            {'params': net.Head_2.parameters(),                       'lr': lr_groups[4]},
             {'params': net.conv_block3.parameters(),                       'lr': lr_groups[5]},
-            {'params': net.classifier_decoupled_channel.parameters(),      'lr': lr_groups[6]},
-            {'params': net.classifier_decoupled_Spatial.parameters(),      'lr': lr_groups[7]},
+            {'params': net.Head_Dc_Channel.parameters(),      'lr': lr_groups[6]},
+            {'params': net.Head_Dc_Spatial.parameters(),      'lr': lr_groups[7]},
             {'params': net.features.parameters(),                          'lr': lr_groups[8]},
         ],
         betas=(0.9, 0.999),
@@ -190,8 +190,8 @@ def train(
         train_loss = 0
         train_loss1 = 0
         train_loss2 = 0
-        train_loss3 = 0
-        train_loss4 = 0
+        train_lossDecoupld = 0
+        train_lossConcat  = 0
 
         correct = 0
         total = 0
@@ -228,10 +228,10 @@ def train(
             optimizer.zero_grad()
             inputs3 = jigsaw_generator(inputs, 2)
             _, _, output_3, ConRes, _ = netp(inputs3)
-            loss3 = CELoss(output_3, targets)
-            ConResloss = con_loss(ConRes, targets)
-            decoupled_loss = loss3 + ConResloss
-            decoupled_loss.backward()
+            lossDecoupld_Channel= CELoss(output_3, targets)
+            lossDecoupld_Spatial = con_loss(ConRes, targets)
+            lossDecoupled = lossDecoupld_Channel + lossDecoupld_Spatial
+            lossDecoupled.backward()
             optimizer.step()
 
             optimizer.zero_grad()
@@ -247,22 +247,22 @@ def train(
             train_loss += (
                 loss1.item() +
                 loss2.item() +
-                decoupled_loss.item() +
+                lossDecoupled.item() +
                 concat_loss.item()
             )
 
             train_loss1 += loss1.item()
             train_loss2 += loss2.item()
-            train_loss3 += decoupled_loss.item()
-            train_loss4 += concat_loss.item()
+            train_lossDecoupld += lossDecoupled.item()
+            train_lossConcat += concat_loss.item()
 
             acc = 100. * float(correct) / total
 
             pbar.set_postfix({
                 'L1': f'{train_loss1/(batch_idx+1):.3f}',
                 'L2': f'{train_loss2/(batch_idx+1):.3f}',
-                'Ldc': f'{train_loss3/(batch_idx+1):.3f}',
-                'Lcon': f'{train_loss4/(batch_idx+1):.3f}',
+                'Ldc': f'{train_lossDecoupld/(batch_idx+1):.3f}',
+                'Lcon': f'{train_lossConcat/(batch_idx+1):.3f}',
                 'Acc': f'{acc:.2f}%'
             })
 
