@@ -1,12 +1,12 @@
 import torch.nn as nn
 import torch
-from Resnet import  resnet50_SACON_ConRes
+from Resnet import  resnet50_SPE
 
 
 def load_model(model_name, class_num, pretrain=True, require_grad=True):
     print('==> Building model..')
     if model_name == 'APSNet':
-        net = resnet50_SACON_ConRes(pretrained=pretrain)
+        net = resnet50_SPE(pretrained=pretrain)
         for param in net.parameters():
             param.requires_grad = require_grad
         net = APSNet(net, 512, class_num)

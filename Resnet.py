@@ -208,12 +208,12 @@ class ResNet(nn.Module):
         return x1, x2, x3, x4, x5
 
 
-class ResNet_SACON_ConRes(nn.Module):
+class ResNet_SPE(nn.Module):
 
     def __init__(self, block, layers, num_classes=1000, zero_init_residual=False,
                  groups=1, width_per_group=64, replace_stride_with_dilation=None,
                  norm_layer=None):
-        super(ResNet_SACON_ConRes, self).__init__()
+        super(ResNet_SPE, self).__init__()
         if norm_layer is None:
             norm_layer = nn.BatchNorm2d
         self._norm_layer = norm_layer
@@ -235,7 +235,7 @@ class ResNet_SACON_ConRes(nn.Module):
         self.eca2 = ECA(channels=257)
         self.eca3 = ECA(channels=513)
         self.eca4 = ECA(channels=1025)
-        self.FS = FrequencySeparation(3,32)
+        self.HS = FrequencySeparation(3,32)
 
         self.CBR0 = nn.Sequential(nn.Conv2d(1, 1, 7, 2,3),
                                  nn.BatchNorm2d(1),
@@ -302,31 +302,31 @@ class ResNet_SACON_ConRes(nn.Module):
         return nn.Sequential(*layers)
 
     def forward(self, x):
-        x_FS = self.FS(x.clone())
-        x_FS_1 = self.CBR0(x_FS)
+        x_HS = self.HS(x.clone())
+        x_HS_1 = self.CBR0(x_HS)
 
         x = self.conv1(x)
         x = self.bn1(x)
         x = self.relu(x)
         x1 = self.maxpool(x)
 
-        x_FS_2 = self.CBR1(x_FS_1)
-        x2 = torch.concat((x1,x_FS_2),dim=1)
+        x_HS_2 = self.CBR1(x_HS_1)
+        x2 = torch.concat((x1,x_HS_2),dim=1)
         x2 = self.eca1(x2)
         x2 = self.layer1(x2) #256,112,112
 
-        x_FS_3 = self.CBR2(x_FS_2)
-        x3 = torch.concat((x2, x_FS_3), dim=1)
+        x_HS_3 = self.CBR2(x_HS_2)
+        x3 = torch.concat((x2, x_HS_3), dim=1)
         x3 = self.eca2(x3)
         x3 = self.layer2(x3)
 
-        x_FS_4 = self.CBR1(x_FS_3)
-        x4 = torch.concat((x3, x_FS_4), dim=1)
+        x_HS_4 = self.CBR1(x_HS_3)
+        x4 = torch.concat((x3, x_HS_4), dim=1)
         x4 = self.eca3(x4)
         x4 = self.layer3(x4)
 
-        x_FS_5 = self.CBR1(x_FS_4)
-        x5 = torch.concat((x4, x_FS_5), dim=1)
+        x_HS_5 = self.CBR1(x_HS_4)
+        x5 = torch.concat((x4, x_HS_5), dim=1)
         x5 = self.eca4(x5)
         x5 = self.layer4(x5)
 
@@ -342,8 +342,8 @@ def _resnet(arch, inplanes, planes, pretrained, progress, **kwargs):
     return model
 
 
-def _resnet_SACON_ConRes(arch, inplanes, planes, pretrained, progress, **kwargs):
-    model = ResNet_SACON_ConRes(inplanes, planes, **kwargs)
+def _resnet_SPE(arch, inplanes, planes, pretrained, progress, **kwargs):
+    model = ResNet_SPE(inplanes, planes, **kwargs)
     if pretrained:
         state_dict = load_state_dict_from_url(model_urls[arch],
                                               progress=progress)
@@ -381,13 +381,13 @@ def resnet50(pretrained=False, progress=True, **kwargs):
                    **kwargs)
 
 
-def resnet50_SACON_ConRes(pretrained=False, progress=True, **kwargs):
+def resnet50_SPE(pretrained=False, progress=True, **kwargs):
     """Constructs a ResNet-50 model.
     Args:
         pretrained (bool): If True, returns a model pre-trained on ImageNet
         progress (bool): If True, displays a progress bar of the download to stderr
     """
-    return _resnet_SACON_ConRes('resnet50', Bottleneck, [3, 4, 6, 3], pretrained, progress,
+    return _resnet_SPE('resnet50', Bottleneck, [3, 4, 6, 3], pretrained, progress,
                    **kwargs)
 
 
@@ -427,5 +427,5 @@ def resnext101_32x8d(**kwargs):
 
 if __name__ == '__main__':
     device = torch.device("cuda:0")
-    model = ResNet_SACON_ConRes(Bottleneck, [3, 4, 6, 3]).to(device)
+    model = ResNet_SPE(Bottleneck, [3, 4, 6, 3]).to(device)
     summary(model, input_size=(1, 3, 512, 512), depth=4)
