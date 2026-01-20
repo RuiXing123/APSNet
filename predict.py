@@ -84,16 +84,9 @@ net.to(DEVICE)
 # Utility functions
 # ==================================================
 def adjust_magnification(img, M_current, M_train=1.6):
-    """
-    将任意倍率的显微镜图像，转换为 1.6x 视野等效图像。
-    策略：
-        - M_current < M_train → 裁剪中心区域
-        - M_current > M_train → 边缘复制填充
-    """
     w, h = img.size
     scale = M_current / M_train
 
-    # 当前倍率低 → 视野大 → 裁剪
     if scale < 1.0:
         crop_ratio = scale
         new_w = int(w * crop_ratio)
@@ -105,7 +98,6 @@ def adjust_magnification(img, M_current, M_train=1.6):
         img = img.crop((left, top, left + new_w, top + new_h))
         img = img.resize((w, h), Image.BICUBIC)
 
-    # 当前倍率高 → 视野小 → 填充
     elif scale > 1.0:
         shrink_ratio = 1 / scale
         new_w = int(w * shrink_ratio)
@@ -284,3 +276,4 @@ if __name__ == '__main__':
     print(f"Precision: {precision:.4f}")
     print(f"Recall   : {recall:.4f}")
     print(f"F1-score : {f1_score:.4f}")
+
