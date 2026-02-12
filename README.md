@@ -97,7 +97,7 @@ pip install -r requirements.txt
 
 ### Dataset
 
-**Apply for APS dataset:** Download and fill in the application form for APS dataset under the data directory and send it to the corresponding author. We will reply after review.
+**Apply for APS dataset:** Download and fill in the application form for APS dataset under the data directory and send it to the first author. We will reply after review.
 
 ```bash
 data/
