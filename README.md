@@ -141,5 +141,15 @@ python predict.py
 ## ⭐ BibTeX
 
 ```bash
-Xing, R., Cong, R., Wu, Y. et al. Towards ancient plant seed classification: a benchmark dataset and baseline model. npj Herit. Sci. (2026). https://doi.org/10.1038/s40494-026-02736-9
+@ARTICLE{Xing2026-qc,
+  title     = "Towards ancient plant seed classification: a benchmark dataset
+               and baseline model",
+  author    = "Xing, Rui and Cong, Runmin and Wu, Yingying and Wang, Can and
+               Tang, Zhongming and Wang, Fen and Wu, Hao and Kwong, Sam",
+  journal   = "NPJ Herit. Sci.",
+  publisher = "Springer Science and Business Media LLC",
+  month     =  jun,
+  year      =  2026,
+  language  = "en"
+}
 ```
