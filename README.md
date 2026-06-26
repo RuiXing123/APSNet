@@ -2,7 +2,7 @@
 
 [Rui Xing](https://www.researchgate.net/profile/Rui-Xing-26?ev=hdr_xprf), [Runmin Cong*](https://scholar.google.cz/citations?user=-VrKJ0EAAAAJ&hl), [Yingying Wu](https://www.researchgate.net/profile/Yingying_Wu26), [Can Wang*](https://www.researchgate.net/profile/Can-Wang-21), [Zhongming Tang](http://en.history.sdu.edu.cn/info/1033/1242.htm), [Fen Wang](http://en.history.sdu.edu.cn/info/1032/1236.htm), [Hao Wu](https://www.history.sdu.edu.cn/info/1069/2114.htm), [Sam Kwong](https://scholar.google.com.hk/citations?hl=zh-CN&user=_PVI6EAAAAAJ)
 
-[Paper](https://doi.org/10.48550/arXiv.2512.18247) | [BibTex](#-bibtex) | [Dataset](#dataset)
+[Paper](https://www.nature.com/articles/s40494-026-02736-9) | [BibTex](#-bibtex) | [Dataset](#dataset)
 
 ## 🚩 Highlights:
 
@@ -141,11 +141,5 @@ python predict.py
 ## ⭐ BibTeX
 
 ```bash
-@ARTICLE{2025arXiv251218247X,
-  author  = {{Xing}, Rui and {Cong}, Runmin and {Wu}, Yingying and {Wang}, Can and {Tang}, Zhongming and {Wang}, Fen and {Wu}, Hao and {Kwong}, Sam},
-  title   = {{Towards Ancient Plant Seed Classification: A Benchmark Dataset and Baseline Model}},
-  journal = {arXiv e-prints},
-  year    = {2025},
-  eprint  = {2512.18247},
-}
+Xing, R., Cong, R., Wu, Y. et al. Towards ancient plant seed classification: a benchmark dataset and baseline model. npj Herit. Sci. (2026). https://doi.org/10.1038/s40494-026-02736-9
 ```
